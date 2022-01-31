@@ -1,12 +1,41 @@
-import { shallowMount } from '@vue/test-utils'
-import HelloWorld from '@/components/HelloWorld.vue'
+// Imports
+import { createLocalVue, mount } from '@vue/test-utils'
+import AppBtn from '../../src/AppBtn.vue';
+import Vuetify from 'vuetify'
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message'
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg }
+// Utilities
+
+describe('AppBtn.vue', () => {
+  // DO NOT use Vuetify on the localInstance
+  // This is bootstrapped in the jest setup
+  // file located in ./tests/setup.js
+  //
+  // localVue.use(Vuetify)
+
+  const localVue = createLocalVue()
+  let vuetify
+
+  beforeEach(() => {
+    vuetify = new Vuetify()
+  })
+
+  it('should work', async () => {
+    const wrapper = mount(AppBtn, {
+      localVue,
+      vuetify,
+      propsData: { title: 'Foobar' },
     })
-    expect(wrapper.text()).toMatch(msg)
+    const button = wrapper.find('#btn')
+    const input = wrapper.find("#login")
+    expect(input.text()).toContain('')
+    input.element.value = 'hello'
+    input.trigger('input')
+    // wrapper.setData({login: 'hello'})
+    expect(input.element.value).toBe('hello')
+    expect(button.text()).toContain('Action')
+
+    await button.trigger('click')
+  
+    expect(button.text()).toContain('Action')
   })
 })
